@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsryc4adlb8k6"]
+
+[ext_resource type="PackedScene" uid="uid://clyd08pd34825" path="res://hud.tscn" id="1_1pkrh"]
+[ext_resource type="Script" path="res://main.gd" id="1_ccxmv"]
+[ext_resource type="PackedScene" uid="uid://c1suo4f6p7t4l" path="res://grid.tscn" id="2_bpqfh"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_ccxmv")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.878431, 0.878431, 0.878431, 1)
+
+[node name="HUD" parent="." instance=ExtResource("1_1pkrh")]
+
+[node name="Grid" parent="." instance=ExtResource("2_bpqfh")]
+position = Vector2(80, 80)
+
+[connection signal="shuffle_blocks" from="HUD" to="." method="_on_hud_shuffle_blocks"]
+[connection signal="start_game" from="HUD" to="." method="_on_hud_start_game"]
