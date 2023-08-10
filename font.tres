@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://dh7h3vxbayh3m"]
+
+[ext_resource type="FontFile" uid="uid://bd6oxweu45qsq" path="res://fonts/barcadenobar.ttf" id="1_r61jf"]
+
+[resource]
+default_font = ExtResource("1_r61jf")

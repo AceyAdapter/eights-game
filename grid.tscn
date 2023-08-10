@@ -1,10 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://c1suo4f6p7t4l"]
+[gd_scene load_steps=5 format=3 uid="uid://c1suo4f6p7t4l"]
 
 [ext_resource type="Script" path="res://grid.gd" id="1_ju3bd"]
 [ext_resource type="PackedScene" uid="uid://c0b3lslsrjl0b" path="res://column.tscn" id="2_4ctp4"]
+[ext_resource type="AudioStream" uid="uid://dw8k8b2nynljr" path="res://hit.wav" id="3_m1dbr"]
+[ext_resource type="AudioStream" uid="uid://uwgrhsi5f0ym" path="res://blip.wav" id="4_dii5w"]
 
 [node name="Grid" type="Node2D"]
 script = ExtResource("1_ju3bd")
 column_scene = ExtResource("2_4ctp4")
 
 [node name="Columns" type="Node2D" parent="."]
+
+[node name="HitSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_m1dbr")
+
+[node name="BlipSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_dii5w")
