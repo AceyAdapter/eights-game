@@ -3,7 +3,7 @@ extends Node
 @export var score = 0
 
 func _ready():
-	#$BackgroundMusic.play()
+	$Grid.hide()
 	pass
 
 func _on_hud_start_game():
@@ -35,8 +35,7 @@ func _on_hud_toggle_volume():
 
 
 func _on_grid_turns_till_stone(turns):
-	var stone_string = "%s turns"
-	$HUD/ScoreLabel/StoneCounter.text = stone_string % turns
+	$HUD/ScoreLabel/NextBlockLabel2/StoneBlock/StoneCounter.text = str(turns)
 
 
 func _on_grid_game_over():
@@ -62,3 +61,7 @@ func _on_hud_play_again():
 
 func _on_grid_reset_score():
 	update_score(-score)
+
+
+func _on_hud_toggle_menu():
+	pass # Replace with function body.

@@ -9,6 +9,13 @@
 script = ExtResource("1_ju3bd")
 column_scene = ExtResource("2_4ctp4")
 
+[node name="GridBackground" type="ColorRect" parent="."]
+offset_left = 15.0
+offset_top = 150.0
+offset_right = 435.0
+offset_bottom = 750.0
+color = Color(0.65098, 0.8, 0.960784, 1)
+
 [node name="Columns" type="Node2D" parent="."]
 
 [node name="HitSound" type="AudioStreamPlayer" parent="."]

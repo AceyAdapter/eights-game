@@ -11,7 +11,7 @@ signal reset_score
 const GRID_SIZE_X = 7
 const GRID_SIZE_Y = 10
 
-var stone_freq = 16
+var stone_freq = 10
 var blocks_till_stone
 
 var rows = []
@@ -21,9 +21,14 @@ var next_number
 
 var game_ended = false
 
+var in_animation = false
+
+func toggle_animation():
+	in_animation = !in_animation
+
 func _ready():
 	block_size = Vector2(60, 60)
-	blocks_till_stone = 16
+	blocks_till_stone = stone_freq
 	
 	turns_till_stone.emit(blocks_till_stone)
 	
@@ -32,6 +37,8 @@ func get_new_number():
 	new_number.emit(next_number)
 
 func initialize_grid():
+	$GridBackground.show()
+	
 	for old_col in $Columns.get_children():
 		old_col.queue_free()
 	
@@ -39,29 +46,35 @@ func initialize_grid():
 	
 	reset_score.emit()
 	
-	blocks_till_stone = 16
+	blocks_till_stone = stone_freq
 	
 	turns_till_stone.emit(blocks_till_stone)
 	
 	get_new_number()
 	
 	for x in range(GRID_SIZE_X):
-		print(x)
 		var column = column_scene.instantiate()
 		$Columns.add_child(column)
-		column.position = Vector2((x * block_size.x) - 45, block_size.y + 30)
+		column.position = Vector2((x * block_size.x) + 15, block_size.y + 90)
 		column.index = x + 1
 		
-		print(column.position)
-		
 		column.column_clicked.connect(on_column_clicked)
-		
+		column.animation_start.connect(on_animation_start)
+		column.animation_end.connect(on_animation_end)
+
+func on_animation_start():
+	pass
+	
+func on_animation_end():
+	pass
 		
 # Place next block on column click
 func on_column_clicked(index, column_node):
 	# Get the lowest empty cell in the clicked column
-	if !game_ended:
+	if !game_ended and !in_animation:
 		if $Columns.get_child(index - 1).find_highest_empty_cell() > 0:
+			blocks_till_stone -= 1
+			turns_till_stone.emit(blocks_till_stone)
 			column_node.place_block(next_number)
 			$HitSound.play()
 		
@@ -70,10 +83,12 @@ func on_column_clicked(index, column_node):
 			
 			get_new_number()
 		else:
+			blocks_till_stone -= 1
+			turns_till_stone.emit(blocks_till_stone)
 			column_node.place_block(next_number)
 			$HitSound.play()
 			
-			await check_grid_for_matches()
+			check_grid_for_matches()
 			get_new_number()
 			
 			if check_grid_for_full_columns():
@@ -152,6 +167,7 @@ func remove_matching_blocks():
 					blocks_to_remove.append([x, y])
 					
 	for block in blocks_to_remove:
+		await get_tree().create_timer(0.1).timeout
 		var column = $Columns.get_child(block[0])
 		score += column.clear_block_at_index(block[1])
 		$BlipSound.play()
@@ -161,7 +177,6 @@ func remove_matching_blocks():
 	return score
 
 func shift_remaining_blocks():
-	await get_tree().create_timer(0.25).timeout
 	# Look through each column and look for 0 below a number,
 	# if so shift everything down by 1.
 	# Repeat recursively then run remove_matching_blocks()
@@ -169,9 +184,9 @@ func shift_remaining_blocks():
 		var column = $Columns.get_child(x)
 		column.shift_blocks_down()
 	
-	await get_tree().create_timer(0.25).timeout
+	var removed_blocks = await remove_matching_blocks()
 	
-	if remove_matching_blocks() == 0:
+	if removed_blocks == 0:
 		return -1
 	else:
 		shift_remaining_blocks()
@@ -182,26 +197,30 @@ func print_grid():
 		var column = $Columns.get_child(x)
 
 func check_grid_for_matches():
-	await get_tree().create_timer(0.25).timeout
+	toggle_animation()
+	
 	# Check through all placed blocks and look for matches
 	remove_matching_blocks()
 	
 	# Shift all blocks down to account for space
-	shift_remaining_blocks()
-	
-	blocks_till_stone -= 1
+	await shift_remaining_blocks()
 	
 	if blocks_till_stone <= 0:
 		print(randi() % 8)
 		var rand_column = $Columns.get_child(randi() % 7)
-		if rand_column.find_highest_empty_cell() >= 0:
+		if rand_column.find_highest_empty_cell() > 0:
 			rand_column.place_block(0)
 			$HitSound.play()
 			
 			blocks_till_stone += stone_freq
+			turns_till_stone.emit(blocks_till_stone)
 		else:
-			print("Game Over!")
+			rand_column.place_block(0)
+			$HitSound.play()
+			
+			game_ended = true
+			game_over.emit()
 	
-	turns_till_stone.emit(blocks_till_stone)
+	toggle_animation()
 	
 	

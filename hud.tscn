@@ -1,14 +1,49 @@
-[gd_scene load_steps=7 format=3 uid="uid://clyd08pd34825"]
+[gd_scene load_steps=8 format=3 uid="uid://clyd08pd34825"]
 
 [ext_resource type="Script" path="res://HUD.gd" id="1_hiusm"]
 [ext_resource type="FontFile" uid="uid://caurlwle2vhw6" path="res://fonts/barcade.ttf" id="2_6dgsy"]
 [ext_resource type="PackedScene" uid="uid://c56nor43qs8f6" path="res://block.tscn" id="2_wvibg"]
 [ext_resource type="Theme" uid="uid://dh7h3vxbayh3m" path="res://font.tres" id="3_kisdl"]
 [ext_resource type="Texture2D" uid="uid://sja11p2j506j" path="res://volume.png" id="3_n04av"]
+[ext_resource type="Texture2D" uid="uid://dn8o8krgfmt65" path="res://pause.png" id="5_cjtxx"]
 [ext_resource type="FontFile" uid="uid://bd6oxweu45qsq" path="res://fonts/barcadenobar.ttf" id="6_68qii"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hiusm")
+
+[node name="Blocks" type="Node2D" parent="."]
+visible = false
+position = Vector2(2.08165e-12, -305)
+
+[node name="Block3" parent="Blocks" instance=ExtResource("2_wvibg")]
+visible = false
+position = Vector2(120, 1220)
+number = 7
+
+[node name="Block2" parent="Blocks" instance=ExtResource("2_wvibg")]
+visible = false
+position = Vector2(60, 1220)
+number = 3
+
+[node name="Block" parent="Blocks" instance=ExtResource("2_wvibg")]
+visible = false
+position = Vector2(2.08165e-12, 1220)
+number = 4
+
+[node name="Block4" parent="Blocks" instance=ExtResource("2_wvibg")]
+visible = false
+position = Vector2(2.08165e-12, 1160)
+number = 4
+
+[node name="Block6" parent="Blocks" instance=ExtResource("2_wvibg")]
+visible = false
+position = Vector2(60, 1160)
+number = 5
+
+[node name="Block5" parent="Blocks" instance=ExtResource("2_wvibg")]
+visible = false
+position = Vector2(2.08165e-12, 1100)
+number = 6
 
 [node name="MainTitle" type="Label" parent="."]
 anchors_preset = 5
@@ -22,7 +57,7 @@ grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 0.301961, 0.301961, 1)
 theme_override_fonts/font = ExtResource("2_6dgsy")
 theme_override_font_sizes/font_size = 60
-text = "OctoBlocks"
+text = "(OctoBlocks)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -78,6 +113,20 @@ text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Menu" type="Button" parent="ScoreLabel"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -426.0
+offset_top = -55.9
+offset_right = 94.0
+offset_bottom = 464.1
+grow_horizontal = 0
+scale = Vector2(0.1, 0.1)
+icon = ExtResource("5_cjtxx")
+flat = true
+
 [node name="NextBlockLabel2" type="Label" parent="ScoreLabel"]
 layout_mode = 1
 anchors_preset = 7
@@ -94,6 +143,20 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "Stone in"
+
+[node name="StoneBlock" parent="ScoreLabel/NextBlockLabel2" instance=ExtResource("2_wvibg")]
+position = Vector2(2.08165e-12, 35)
+number = 0
+
+[node name="StoneCounter" type="Label" parent="ScoreLabel/NextBlockLabel2/StoneBlock"]
+offset_right = 60.0
+offset_bottom = 60.0
+theme = ExtResource("3_kisdl")
+theme_override_colors/font_color = Color(1, 0.301961, 0.301961, 1)
+theme_override_font_sizes/font_size = 25
+text = "10"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="NextBlockLabel" type="Label" parent="ScoreLabel"]
 layout_mode = 1
@@ -112,16 +175,6 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "Next Block"
 
-[node name="StoneCounter" type="Label" parent="ScoreLabel"]
-layout_mode = 0
-offset_left = 22.0
-offset_top = 728.0
-offset_right = 62.0
-offset_bottom = 751.0
-theme_override_colors/font_color = Color(1, 0.301961, 0.301961, 1)
-theme_override_font_sizes/font_size = 25
-text = "10 turns"
-
 [node name="Volume" type="Button" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
@@ -134,42 +187,6 @@ grow_horizontal = 0
 scale = Vector2(0.1, 0.1)
 icon = ExtResource("3_n04av")
 flat = true
-
-[node name="Blocks" type="Node2D" parent="."]
-visible = false
-position = Vector2(2.08165e-12, -305)
-
-[node name="Block3" parent="Blocks" instance=ExtResource("2_wvibg")]
-position = Vector2(120, 1220)
-number = 7
-
-[node name="Block2" parent="Blocks" instance=ExtResource("2_wvibg")]
-position = Vector2(60, 1220)
-number = 3
-
-[node name="Block5" parent="Blocks" instance=ExtResource("2_wvibg")]
-position = Vector2(2.08165e-12, 1100)
-number = 6
-
-[node name="Block6" parent="Blocks" instance=ExtResource("2_wvibg")]
-position = Vector2(60, 1160)
-number = 5
-
-[node name="Block4" parent="Blocks" instance=ExtResource("2_wvibg")]
-position = Vector2(2.08165e-12, 1160)
-number = 4
-
-[node name="Block" parent="Blocks" instance=ExtResource("2_wvibg")]
-position = Vector2(2.08165e-12, 1220)
-number = 4
-
-[node name="GridBackground" type="ColorRect" parent="."]
-visible = false
-offset_left = 15.0
-offset_top = 150.0
-offset_right = 435.0
-offset_bottom = 750.0
-color = Color(0.8, 0.8, 0.8, 1)
 
 [node name="GameOver" type="ColorRect" parent="."]
 visible = false
@@ -270,6 +287,7 @@ theme_override_font_sizes/font_size = 30
 text = "Play Again"
 
 [connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="ScoreLabel/Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="Volume" to="." method="_on_volume_button_pressed"]
 [connection signal="pressed" from="GameOver/GoHomeButton" to="." method="_on_go_home_button_pressed"]
 [connection signal="pressed" from="GameOver/PlayAgainButton" to="." method="_on_play_again_button_pressed"]

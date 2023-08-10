@@ -3,6 +3,8 @@ extends Node2D
 @export var block_scene: PackedScene
 
 signal column_clicked(index, node)
+signal animation_start
+signal animation_end
 
 const COLUMN_SIZE = 10
 
@@ -61,7 +63,15 @@ func initialize_column():
 func create_block(number):
 	var block = block_scene.instantiate()
 	block.number = number
+	block.animation_start.connect(on_animation_start)
+	block.animation_end.connect(on_animation_end)
 	return block
+	
+func on_animation_start():
+	animation_start.emit()
+
+func on_animation_end():
+	animation_end.emit()
 	
 func place_block(number):
 	var lowest_cell = find_highest_empty_cell()

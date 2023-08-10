@@ -4,14 +4,19 @@ signal start_game
 signal home_pressed
 signal play_again
 signal toggle_volume
+signal toggle_menu
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$ScoreLabel.hide()
 	$PreviewBlock.hide()
-	$GridBackground.hide()
-	$Blocks.show()
 	$GameOver.hide()
+	$Blocks.show()
+	
+	for block in $Blocks.get_children():
+		await get_tree().create_timer(0.2).timeout
+		block.show()
+		block.play_fall_in()
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -46,3 +51,7 @@ func _on_go_home_button_pressed():
 
 func _on_play_again_button_pressed():
 	play_again.emit()
+
+
+func _on_menu_pressed():
+	toggle_menu.emit()
