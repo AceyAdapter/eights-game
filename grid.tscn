@@ -23,3 +23,8 @@ stream = ExtResource("3_m1dbr")
 
 [node name="BlipSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_dii5w")
+
+[node name="TrialTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="TrialTimer" to="." method="_on_trial_timer_timeout"]

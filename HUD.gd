@@ -7,6 +7,9 @@ signal toggle_volume
 signal toggle_menu
 signal close_menu
 signal quit_game
+signal time_trial
+signal show_stats
+signal close_stats
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -73,3 +76,15 @@ func _on_close_button_pressed():
 
 func _on_quit_game_button_pressed():
 	quit_game.emit()
+
+
+func _on_start_time_button_pressed():
+	time_trial.emit()
+
+
+func _on_show_stats_pressed():
+	show_stats.emit()
+
+
+func _on_close_stats_pressed():
+	close_stats.emit()

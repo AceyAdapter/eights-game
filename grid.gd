@@ -4,9 +4,11 @@ signal new_number(number)
 signal new_score(score)
 signal turns_till_stone(turns)
 signal game_over
+signal time_left(time)
 signal reset_score
 
 @export var column_scene: PackedScene
+@export var mode = "survival"
 
 const GRID_SIZE_X = 7
 const GRID_SIZE_Y = 10
@@ -26,6 +28,10 @@ var game_ended = false
 var in_animation = false
 var block_animation = false
 
+func set_mode(new_mode):
+	mode = new_mode
+	print(mode)
+
 func toggle_animation():
 	in_animation = !in_animation
 
@@ -38,6 +44,15 @@ func _ready():
 func get_new_number():
 	next_number = randi() % 7 + 2
 	new_number.emit(next_number)
+	
+func set_timer(time):
+	$TrialTimer.set_paused(false)
+	$TrialTimer.wait_time = time
+	$TrialTimer.start()
+	
+func _process(delta):
+	if !$TrialTimer.is_paused():
+		time_left.emit($TrialTimer.time_left)
 
 func initialize_grid():
 	$GridBackground.show()
@@ -257,3 +272,8 @@ func check_grid_for_matches():
 	toggle_animation()
 	
 	
+
+
+func _on_trial_timer_timeout():
+	game_ended = true
+	game_over.emit()

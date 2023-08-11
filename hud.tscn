@@ -64,12 +64,28 @@ offset_top = 200.0
 offset_right = 265.5
 offset_bottom = 307.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 0.301961, 0.301961, 1)
+theme_override_colors/font_color = Color(0.941176, 0.870588, 0.12549, 1)
 theme_override_fonts/font = ExtResource("2_6dgsy")
 theme_override_font_sizes/font_size = 60
 text = "(OctoBlocks)"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ShowStats" type="Button" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = 124.5
+offset_right = 100.0
+offset_bottom = 184.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_kisdl")
+theme_override_font_sizes/font_size = 30
+text = "HighScores"
 
 [node name="StartTimeButton" type="Button" parent="."]
 anchors_preset = 8
@@ -105,7 +121,7 @@ text = "Survival
 "
 
 [node name="PreviewBlock" parent="." instance=ExtResource("2_wvibg")]
-position = Vector2(194, 820)
+position = Vector2(194, 815)
 number = 4
 
 [node name="ScoreLabel" type="Label" parent="."]
@@ -226,6 +242,50 @@ text = "3204"
 horizontal_alignment = 2
 vertical_alignment = 1
 
+[node name="TimeLeft" type="Label" parent="ScoreLabel"]
+visible = false
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = 651.0
+offset_right = -15.0
+offset_bottom = 697.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("6_68qii")
+theme_override_font_sizes/font_size = 20
+text = "Time Left
+"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Clock" type="Label" parent="ScoreLabel"]
+visible = false
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = 674.0
+offset_right = -15.0
+offset_bottom = 720.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("6_68qii")
+theme_override_font_sizes/font_size = 32
+text = "5:00
+"
+horizontal_alignment = 2
+vertical_alignment = 1
+
 [node name="HitSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_de1fx")
 
@@ -316,7 +376,7 @@ offset_right = -50.0
 offset_bottom = -55.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.941176, 0.870588, 0.12549, 1)
 theme_override_fonts/font = ExtResource("6_68qii")
 theme_override_font_sizes/font_size = 35
 text = "0"
@@ -356,6 +416,135 @@ grow_vertical = 2
 theme = ExtResource("3_kisdl")
 theme_override_font_sizes/font_size = 30
 text = "Play Again"
+
+[node name="Stats" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.431373)
+
+[node name="Modal" type="TextureRect" parent="Stats"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -200.0
+offset_right = 175.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_uyjfe")
+
+[node name="CloseStats" type="Button" parent="Stats"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -90.0
+offset_top = 80.0
+offset_right = 90.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_kisdl")
+theme_override_font_sizes/font_size = 30
+text = "Close"
+
+[node name="HighscoreLabel" type="Label" parent="Stats"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -73.0
+offset_top = -167.5
+offset_right = 73.0
+offset_bottom = -128.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("6_68qii")
+theme_override_font_sizes/font_size = 38
+text = "Highscores"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TrialScore" type="Label" parent="Stats"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -17.5
+offset_bottom = 9.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.941176, 0.870588, 0.12549, 1)
+theme_override_fonts/font = ExtResource("6_68qii")
+theme_override_font_sizes/font_size = 25
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TrialLabel" type="Label" parent="Stats"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -47.5
+offset_bottom = -20.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("6_68qii")
+theme_override_font_sizes/font_size = 25
+text = "Trial (5 mins)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SurvivalScore" type="Label" parent="Stats"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -87.5
+offset_bottom = -60.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.941176, 0.870588, 0.12549, 1)
+theme_override_fonts/font = ExtResource("6_68qii")
+theme_override_font_sizes/font_size = 25
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SurvivalLabel" type="Label" parent="Stats"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -117.5
+offset_bottom = -90.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("6_68qii")
+theme_override_font_sizes/font_size = 25
+text = "Survival"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Menu" type="ColorRect" parent="."]
 visible = false
@@ -470,10 +659,13 @@ text = "Music Volume"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[connection signal="pressed" from="ShowStats" to="." method="_on_show_stats_pressed"]
+[connection signal="pressed" from="StartTimeButton" to="." method="_on_start_time_button_pressed"]
 [connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="ScoreLabel/Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="GameOver/GoHomeButton" to="." method="_on_go_home_button_pressed"]
 [connection signal="pressed" from="GameOver/PlayAgainButton" to="." method="_on_play_again_button_pressed"]
+[connection signal="pressed" from="Stats/CloseStats" to="." method="_on_close_stats_pressed"]
 [connection signal="pressed" from="Menu/Volume" to="." method="_on_volume_button_pressed"]
 [connection signal="pressed" from="Menu/QuitGameButton" to="." method="_on_quit_game_button_pressed"]
 [connection signal="pressed" from="Menu/CloseButton" to="." method="_on_close_button_pressed"]
