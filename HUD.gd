@@ -5,6 +5,8 @@ signal home_pressed
 signal play_again
 signal toggle_volume
 signal toggle_menu
+signal close_menu
+signal quit_game
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -42,6 +44,14 @@ func _on_start_button_pressed():
 
 
 func _on_volume_button_pressed():
+	var current_img = $Menu/Volume.icon.get_path()
+	
+	if current_img == "res://mute.png":
+		var image = preload("res://volume.png")
+		$Menu/Volume.icon = image
+	else:
+		var image = preload("res://mute.png")
+		$Menu/Volume.icon = image
 	toggle_volume.emit()
 
 
@@ -55,3 +65,11 @@ func _on_play_again_button_pressed():
 
 func _on_menu_pressed():
 	toggle_menu.emit()
+
+
+func _on_close_button_pressed():
+	close_menu.emit()
+
+
+func _on_quit_game_button_pressed():
+	quit_game.emit()

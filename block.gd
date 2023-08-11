@@ -72,12 +72,14 @@ func set_number(num):
 	gradient_texture.gradient = gradient
 	gradient_texture.width = 60
 	gradient_texture.height =60
+	
+	gradient.set_offset(0, 0.01)
+	gradient.set_offset(1, 0.7)
 
 	$TextureRect.texture = gradient_texture
 
 func play_fall_in():
 	animation_start.emit()
-	print(self.position.y)
 	
 	var final_y = self.position.y
 	
@@ -86,6 +88,8 @@ func play_fall_in():
 	while (self.position.y < final_y):
 		self.position.y += 20
 		await get_tree().create_timer(0.001).timeout
+	
+	$HitSound.play()
 	
 	animation_end.emit()
 

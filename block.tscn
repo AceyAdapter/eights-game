@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://c56nor43qs8f6"]
+[gd_scene load_steps=6 format=3 uid="uid://c56nor43qs8f6"]
 
 [ext_resource type="Script" path="res://block.gd" id="1_nv5bn"]
 [ext_resource type="Theme" uid="uid://dh7h3vxbayh3m" path="res://font.tres" id="2_rk083"]
+[ext_resource type="AudioStream" uid="uid://dw8k8b2nynljr" path="res://hit.wav" id="3_ckpwb"]
 
 [sub_resource type="Animation" id="Animation_n534u"]
 resource_name = "fall_in"
@@ -38,7 +39,7 @@ offset_right = 60.0
 offset_bottom = 60.0
 theme = ExtResource("2_rk083")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 25
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -53,3 +54,7 @@ visible = false
 offset_right = 60.0
 offset_bottom = 60.0
 color = Color(0.129412, 0.67451, 0.772549, 1)
+
+[node name="HitSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_ckpwb")
+volume_db = -5.0

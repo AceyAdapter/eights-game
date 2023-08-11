@@ -80,7 +80,7 @@ func place_block(number):
 	block.set_number(number)	
 	column_vals[lowest_cell] = number
 	
-	block.play_fall_in()
+	await block.play_fall_in()
 
 func check_full_column():
 	var lowest_cell = find_highest_empty_cell()

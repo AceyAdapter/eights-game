@@ -19,9 +19,12 @@ var columns_parent
 var block_size
 var next_number
 
+var in_menu = false
+
 var game_ended = false
 
 var in_animation = false
+var block_animation = false
 
 func toggle_animation():
 	in_animation = !in_animation
@@ -38,6 +41,9 @@ func get_new_number():
 
 func initialize_grid():
 	$GridBackground.show()
+	
+	in_animation = false
+	block_animation = false
 	
 	for old_col in $Columns.get_children():
 		old_col.queue_free()
@@ -63,37 +69,44 @@ func initialize_grid():
 		column.animation_end.connect(on_animation_end)
 
 func on_animation_start():
+	block_animation = true
 	pass
 	
 func on_animation_end():
+	block_animation = false
 	pass
 		
 # Place next block on column click
 func on_column_clicked(index, column_node):
 	# Get the lowest empty cell in the clicked column
-	if !game_ended and !in_animation:
+	if !game_ended and !in_animation and !block_animation and !in_menu:
 		if $Columns.get_child(index - 1).find_highest_empty_cell() > 0:
+			var block_no = next_number
+			
+			get_new_number()
+			
 			blocks_till_stone -= 1
 			turns_till_stone.emit(blocks_till_stone)
-			column_node.place_block(next_number)
-			$HitSound.play()
-		
+			await column_node.place_block(block_no)
 			
 			check_grid_for_matches()
 			
-			get_new_number()
+			
 		else:
+			var block_no = next_number
+			get_new_number()
+			
 			blocks_till_stone -= 1
 			turns_till_stone.emit(blocks_till_stone)
-			column_node.place_block(next_number)
-			$HitSound.play()
-			
+			await column_node.place_block(block_no)
+		
 			check_grid_for_matches()
-			get_new_number()
+			
 			
 			if check_grid_for_full_columns():
 				game_ended = true
 				game_over.emit()
+				
 
 func check_grid_for_full_columns():
 	for x in range(GRID_SIZE_X):
@@ -110,7 +123,7 @@ func get_number_at_index(x, y):
 		return $Columns.get_child(x).get_number_at_index(y)
 
 func is_valid_block(x, y):
-	if x >= 0 and y >= 0 and x < GRID_SIZE_X and y < GRID_SIZE_Y and get_number_at_index(x,y) > 0:		
+	if x >= 0 and y >= 0 and x < GRID_SIZE_X and y < GRID_SIZE_Y:		
 		return true
 	
 func count_adjacent_blocks(x, y, value, visited):	
@@ -139,7 +152,7 @@ func should_block_be_removed(x, y):
 		var temp_column = $Columns.get_child(col)
 		var temp_lowest_cell = temp_column.find_highest_empty_cell()
 		
-		if temp_lowest_cell < GRID_SIZE_Y - 1:
+		if temp_lowest_cell < GRID_SIZE_Y:
 			for row in range(GRID_SIZE_Y - 1, temp_lowest_cell, -1):
 				visited[col].append(false)
 	
@@ -152,6 +165,27 @@ func should_block_be_removed(x, y):
 			
 		if adj_count >= block_val:
 			return true
+
+func remove_adjacent_stone(x, y):
+	var left = [x - 1, y]
+	var right = [x + 1, y]
+	var up = [x, y + 1]
+	var down = [x, y - 1]
+	
+	var directions = [left, right, up, down]
+	
+	for direction in directions:
+		if is_valid_block(direction[0], direction[1]) and $Columns.get_child(direction[0]).get_number_at_index(direction[1]) == 0:
+			print(direction)
+			
+			var column = $Columns.get_child(direction[0])
+			column.clear_block_at_index(direction[1])
+			
+			print("removed stone")
+			
+			$BlipSound.play()
+			new_score.emit(10)
+		
 	
 func remove_matching_blocks():
 	var blocks_to_remove = []
@@ -169,12 +203,14 @@ func remove_matching_blocks():
 	for block in blocks_to_remove:
 		await get_tree().create_timer(0.1).timeout
 		var column = $Columns.get_child(block[0])
-		score += column.clear_block_at_index(block[1])
+		new_score.emit(column.clear_block_at_index(block[1]))
 		$BlipSound.play()
+		
+		await remove_adjacent_stone(block[0], block[1])
+		
 	# Return score
 	# Blocks are worth their face value
-	new_score.emit(score)
-	return score
+	return len(blocks_to_remove)
 
 func shift_remaining_blocks():
 	# Look through each column and look for 0 below a number,
@@ -206,17 +242,14 @@ func check_grid_for_matches():
 	await shift_remaining_blocks()
 	
 	if blocks_till_stone <= 0:
-		print(randi() % 8)
 		var rand_column = $Columns.get_child(randi() % 7)
 		if rand_column.find_highest_empty_cell() > 0:
-			rand_column.place_block(0)
-			$HitSound.play()
+			await rand_column.place_block(0)
 			
 			blocks_till_stone += stone_freq
 			turns_till_stone.emit(blocks_till_stone)
 		else:
-			rand_column.place_block(0)
-			$HitSound.play()
+			await rand_column.place_block(0)
 			
 			game_ended = true
 			game_over.emit()
