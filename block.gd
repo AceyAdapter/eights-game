@@ -61,7 +61,6 @@ func set_number(num):
 		}
 		$Number.text = ""
 	else:
-		$ColorRect.color = "#A6CCF5"
 		$Number.text = ""
 
 	var gradient := Gradient.new()
@@ -94,6 +93,18 @@ func play_fall_in():
 	animation_end.emit()
 
 	
+func show_pop_number(number):
+	var pop_string = "+%s"
+	
+	if number == 0:
+		number = 10
+	
+	$PopNumber.text = pop_string % number
+	$PopNumber.show()
+	
+	await get_tree().create_timer(1).timeout
+	
+	$PopNumber.hide()
 
 func get_number():
 	return number

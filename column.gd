@@ -37,13 +37,17 @@ func get_number_at_index(index):
 	if index < COLUMN_SIZE:
 		return column_vals[index]
 
-func clear_block_at_index(index):
+func clear_block_at_index(index, combo_modifier):
 	var block = blocks_parent.get_child(index)
 	
 	var score = block.number
 	
-	block.set_number(-1)
-	column_vals[index] = -1
+	if score != -1:
+		block.show_pop_number(score*combo_modifier)
+		block.set_number(-1)
+		column_vals[index] = -1
+	
+	# Add animation for score label popup on pop
 	
 	return score
 	

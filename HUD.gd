@@ -8,6 +8,7 @@ signal toggle_menu
 signal close_menu
 signal quit_game
 signal time_trial
+signal close_welcome(new_name)
 signal show_stats
 signal close_stats
 
@@ -17,6 +18,9 @@ func _ready():
 	$PreviewBlock.hide()
 	$GameOver.hide()
 	$Blocks.show()
+	
+	var generatedName = generateName()
+	$WelcomePopup/FirstPage/NameLabel.text = generatedName
 	
 	for block in $Blocks.get_children():
 		await get_tree().create_timer(0.2).timeout
@@ -39,6 +43,7 @@ func _on_start_button_pressed():
 	$StartTimeButton.hide()
 	$MainTitle.hide()
 	$ScoreLabel.show()
+	$MusicToggle.hide()
 	
 	$PreviewBlock.show()
 	
@@ -52,9 +57,11 @@ func _on_volume_button_pressed():
 	if current_img == "res://mute.png":
 		var image = preload("res://volume.png")
 		$Menu/Volume.icon = image
+		$MusicToggle.text = "Music: On"
 	else:
 		var image = preload("res://mute.png")
 		$Menu/Volume.icon = image
+		$MusicToggle.text = "Music: Off"
 	toggle_volume.emit()
 
 
@@ -88,3 +95,127 @@ func _on_show_stats_pressed():
 
 func _on_close_stats_pressed():
 	close_stats.emit()
+
+
+func _on_music_toggle_pressed():
+	_on_volume_button_pressed()
+
+
+func _on_close_welcome_pressed():
+	print($WelcomePopup/FirstPage/NameLabel.get_text())
+	close_welcome.emit($WelcomePopup/FirstPage/NameLabel.get_text())
+	
+var prefixes := [
+	"Mystic",
+	"Cryptic",
+	"Ethereal",
+	"Enigmatic",
+	"Puzzling",
+	"Intricate",
+	"Curious",
+	"Arcane",
+	"Clever",
+	"Surreal",
+	"Quizzical",
+	"Perplexing",
+	"Complex",
+	"Mindful",
+	"Unusual",
+	"Challenging",
+	"Baffling",
+	"Amusing",
+	"Astute",
+	"Tricky",
+	"Abstract",
+	"Cognitive",
+	"Confounding",
+	"Cunning",
+	"Cerebral",
+	"Crafty",
+	"Delicate",
+	"Devious",
+	"Elusive",
+	"Eccentric",
+	"Esoteric",
+	"Fascinating",
+	"Ingenious",
+	"Insightful",
+	"Intellectual",
+	"Mysterious",
+	"Paradoxical",
+	"Pensive",
+	"Peculiar",
+	"Pensive",
+	"Thoughtful",
+	"Unconventional",
+	"Unfathomable",
+	"Unpredictable",
+	"Whimsical",
+	"Witty",
+	"Cryptical",
+	"Riddling",
+]
+var suffixes := [
+	"Kangaroo",
+	"Sloth",
+	"Penguin",
+	"Giraffe",
+	"Cheetah",
+	"Llama",
+	"Panda",
+	"Hedgehog",
+	"Ostrich",
+	"Octopus",
+	"Squirrel",
+	"Raccoon",
+	"Koala",
+	"Flamingo",
+	"Platypus",
+	"Narwhal",
+	"Walrus",
+	"Seagull",
+	"Parrot",
+	"Hippo",
+	"Gorilla",
+	"Hamster",
+	"Chameleon",
+	"Kitten",
+	"Puppy",
+	"Robot",
+	"Spaceship",
+	"Banana",
+	"Taco",
+	"Pineapple",
+	"Gummybear",
+	"Bubble",
+	"Unicorn",
+	"Dragon",
+	"Wizard",
+	"Ninja",
+	"Superhero",
+	"Rainbow",
+	"Marshmallow",
+	"Sneaker",
+	"Slinky",
+	"SillyPutty",
+	"Noodle",
+	"Slinky",
+	"Kazoo",
+	"Pajamas",
+	"Banjo",
+	"Pirate"
+]
+
+
+# Function to generate a name
+func generateName():
+	var randomPrefix = prefixes[randi() % prefixes.size()]
+	var randomSuffix = suffixes[randi() % suffixes.size()]
+	
+	var generatedName = randomPrefix + " " + randomSuffix
+	
+	return generatedName
+
+func _on_generate_name_pressed():
+	var generatedName = generateName()
+	$WelcomePopup/FirstPage/NameLabel.text = generatedName

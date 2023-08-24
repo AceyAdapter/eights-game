@@ -6,6 +6,7 @@ signal turns_till_stone(turns)
 signal game_over
 signal time_left(time)
 signal reset_score
+signal turns_till_next_level_signal(turns)
 
 @export var column_scene: PackedScene
 @export var mode = "survival"
@@ -13,13 +14,18 @@ signal reset_score
 const GRID_SIZE_X = 7
 const GRID_SIZE_Y = 10
 
+var blip_pitch = 1
+
 var stone_freq = 10
+var turns_till_next_level = 4
 var blocks_till_stone
 
 var rows = []
 var columns_parent
 var block_size
 var next_number
+
+var combo_modifier = 1
 
 var in_menu = false
 
@@ -68,8 +74,12 @@ func initialize_grid():
 	reset_score.emit()
 	
 	blocks_till_stone = stone_freq
+	turns_till_next_level = 4
+	
+	stone_freq = 10
 	
 	turns_till_stone.emit(blocks_till_stone)
+	turns_till_next_level_signal.emit(turns_till_next_level)
 	
 	get_new_number()
 	
@@ -96,6 +106,7 @@ func on_column_clicked(index, column_node):
 	# Get the lowest empty cell in the clicked column
 	if !game_ended and !in_animation and !block_animation and !in_menu:
 		if $Columns.get_child(index - 1).find_highest_empty_cell() > 0:
+			
 			var block_no = next_number
 			
 			get_new_number()
@@ -103,6 +114,8 @@ func on_column_clicked(index, column_node):
 			blocks_till_stone -= 1
 			turns_till_stone.emit(blocks_till_stone)
 			await column_node.place_block(block_no)
+			
+			combo_modifier = 0
 			
 			check_grid_for_matches()
 			
@@ -115,8 +128,7 @@ func on_column_clicked(index, column_node):
 			turns_till_stone.emit(blocks_till_stone)
 			await column_node.place_block(block_no)
 		
-			check_grid_for_matches()
-			
+			await check_grid_for_matches()
 			
 			if check_grid_for_full_columns():
 				game_ended = true
@@ -194,11 +206,11 @@ func remove_adjacent_stone(x, y):
 			print(direction)
 			
 			var column = $Columns.get_child(direction[0])
-			column.clear_block_at_index(direction[1])
+			column.clear_block_at_index(direction[1], combo_modifier)
 			
 			print("removed stone")
-			
 			$BlipSound.play()
+			
 			new_score.emit(10)
 		
 	
@@ -215,11 +227,16 @@ func remove_matching_blocks():
 				if should_block_be_removed(x, y):
 					blocks_to_remove.append([x, y])
 					
+	var blip_pitch = 1
+	
 	for block in blocks_to_remove:
 		await get_tree().create_timer(0.1).timeout
 		var column = $Columns.get_child(block[0])
-		new_score.emit(column.clear_block_at_index(block[1]))
+		new_score.emit(column.clear_block_at_index(block[1], combo_modifier))
+		$BlipSound.pitch_scale = blip_pitch
 		$BlipSound.play()
+		
+		blip_pitch += 0.1
 		
 		await remove_adjacent_stone(block[0], block[1])
 		
@@ -234,6 +251,8 @@ func shift_remaining_blocks():
 	for x in range(GRID_SIZE_X):
 		var column = $Columns.get_child(x)
 		column.shift_blocks_down()
+		
+	combo_modifier += 1
 	
 	var removed_blocks = await remove_matching_blocks()
 	
@@ -261,7 +280,34 @@ func check_grid_for_matches():
 		if rand_column.find_highest_empty_cell() > 0:
 			await rand_column.place_block(0)
 			
+			if mode == "survival":
+				turns_till_next_level -= 1
+				
+				if turns_till_next_level == 0:
+					if stone_freq > 2:
+						stone_freq -= 1
+					else:
+						var anon_col = $Columns.get_child(randi() % 7)
+						
+						if anon_col.find_highest_empty_cell() > 0:
+							await anon_col.place_block((randi() % 7) + 2)
+						else:
+							await anon_col.place_block((randi() % 7) + 2)
+							
+							var removed_blocks = await remove_matching_blocks()
+							
+							if removed_blocks == 0:
+								game_ended = true
+								game_over.emit()
+							else:
+								shift_remaining_blocks()
+						
+					turns_till_next_level = 4
+				
+				turns_till_next_level_signal.emit(turns_till_next_level)
+				
 			blocks_till_stone += stone_freq
+				
 			turns_till_stone.emit(blocks_till_stone)
 		else:
 			await rand_column.place_block(0)

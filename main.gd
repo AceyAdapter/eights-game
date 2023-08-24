@@ -4,15 +4,19 @@ extends Node
 
 var survival_high_score = 0
 var trial_high_score = 0
+var first_time = 0
+var username = ""
 
 var save_path = "user://save_file.dat"
+var name_path = "user://name_file.dat"
 
-func save_data(survival_high_score, trial_high_score):
+func save_data():
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
 
 	if file:
 		file.store_32(survival_high_score)
 		file.store_32(trial_high_score)
+		file.store_8(first_time)
 		
 		file.close()
 		
@@ -26,18 +30,30 @@ func load_data():
 	if file:
 		var stored_hi_score = file.get_32()
 		var stored_trial_score = file.get_32()
+		var stored_first_time = file.get_8()
 		file.close()
 		
 		print(stored_hi_score)
 		print(stored_trial_score)
+		print(stored_first_time)
 
 		survival_high_score = stored_hi_score
 		trial_high_score = stored_trial_score
+		first_time = stored_first_time
 		
-		return survival_high_score
 	else:
 		print("No save file found.")
-		return null
+		
+	var name_file = FileAccess.open(name_path, FileAccess.READ)
+	
+	if name_file:
+		var stored_name = name_file.get_line()
+		
+		print(stored_name)
+		
+		username = stored_name
+	else:
+		print("No name found!")
 
 # Save data before closing
 func _exit_tree():
@@ -47,20 +63,29 @@ func _exit_tree():
 func _ready():
 	await load_data()
 	$HUD/ScoreLabel/HighScoreLabel.text = str(survival_high_score)
+	$HUD/Stats/NameLabel.text = username
 	$Grid.hide()
 	$BackgroundMusic.play()
-	pass
+	
+	if first_time == 0:
+		first_time = 1
+		save_data()
+		
+		$HUD/WelcomePopup.show()
+
 
 func _on_hud_start_game():
 	$HUD/Blocks.hide()
 	$HUD/ShowStats.hide()
 	$Grid.new_number.connect(on_new_number)
 	$HUD/ScoreLabel/HighScoreLabel.text = str(survival_high_score)
+	$HUD/ScoreLabel/NextBlockLabel2/TurnsTillNextLevel.show()
 	$Grid.set_mode("survival")
 	$Grid.initialize_grid()
 	$Grid.show()
 	$HUD/ScoreLabel/Clock.hide()
 	$HUD/ScoreLabel/TimeLeft.hide()
+	$HUD/MusicToggle.hide()
 	
 func on_new_number(number):
 	$HUD.set_preview_block(number)
@@ -106,13 +131,13 @@ func _on_grid_game_over():
 		
 		$HUD/GameOver/HighScoreText.show()
 		$HUD/ScoreLabel/HighScoreLabel.text = str(survival_high_score)
-		save_data(survival_high_score, trial_high_score)
+		save_data()
 	elif $Grid.mode == "time_trial" and score > trial_high_score:
 		trial_high_score = score
 		
 		$HUD/GameOver/HighScoreText.show()
 		$HUD/ScoreLabel/HighScoreLabel.text = str(trial_high_score)
-		save_data(survival_high_score, trial_high_score)
+		save_data()
 
 
 func _on_hud_home_pressed():
@@ -126,6 +151,7 @@ func _on_hud_home_pressed():
 	$HUD/MainTitle.show()
 	$HUD/ShowStats.show()
 	$HUD/StartTimeButton.show()
+	$HUD/MusicToggle.show()
 
 
 func _on_hud_play_again():
@@ -169,6 +195,7 @@ func _on_hud_quit_game():
 	$HUD/MainTitle.show()
 	$HUD/ShowStats.show()
 	$HUD/StartTimeButton.show()
+	$HUD/MusicToggle.show()
 	$HUD/Menu.hide()
 	$Grid.in_menu = false
 	$Grid.in_animation = true
@@ -177,13 +204,13 @@ func _on_hud_quit_game():
 			survival_high_score = score
 			
 			$HUD/ScoreLabel/HighScoreLabel.text = str(survival_high_score)
-			save_data(survival_high_score, trial_high_score)
+			save_data()
 	elif $Grid.mode == "time_trial" and score > trial_high_score:
 		trial_high_score = score
 		
 		$HUD/GameOver/HighScoreText.show()
 		$HUD/ScoreLabel/HighScoreLabel.text = str(trial_high_score)
-		save_data(survival_high_score, trial_high_score)
+		save_data()
 
 func seconds_to_min_sec(total_seconds):
 	var minutes = int(total_seconds) / 60
@@ -202,6 +229,7 @@ func _on_hud_time_trial():
 	$HUD/StartTimeButton.hide()
 	$HUD/ShowStats.hide()
 	$HUD/ScoreLabel/HighScoreLabel.text = str(trial_high_score)
+	$HUD/ScoreLabel/NextBlockLabel2/TurnsTillNextLevel.hide()
 	
 	$Grid.new_number.connect(on_new_number)
 	$Grid.set_mode("time_trial")
@@ -212,6 +240,7 @@ func _on_hud_time_trial():
 	$HUD/PreviewBlock.show()
 	$HUD/ScoreLabel/Clock.show()
 	$HUD/ScoreLabel/TimeLeft.show()
+	$HUD/MusicToggle.hide()
 
 
 func _on_hud_show_stats():
@@ -222,3 +251,31 @@ func _on_hud_show_stats():
 
 func _on_hud_close_stats():
 	$HUD/Stats.hide()
+
+
+func _on_grid_turns_till_next_level_signal(turns):
+	var text = ""
+	
+	for turn in (4-turns):
+		text += ". "
+	
+	$HUD/ScoreLabel/NextBlockLabel2/TurnsTillNextLevel/BackgroundText.text = text
+
+
+func _on_hud_close_welcome(new_name):
+	print(new_name)
+	username = new_name
+
+	var file = FileAccess.open(name_path, FileAccess.WRITE)
+
+	if file:
+		file.store_string(username)
+		file.close()
+		
+		print("saved name: %s" % username)
+	else:
+		print("failed to save name")
+	
+	$HUD/Stats/NameLabel.text = username
+		
+	$HUD/WelcomePopup.hide()
